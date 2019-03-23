@@ -12,22 +12,16 @@
  *
  * @param string $op
  *   Whether to encrypt or decrypt.
- *   - "encrypt": Encrypt text
- *   - "decrypt": Decrypt text
- *
+ *   - "encrypt": Encrypt text.
+ *   - "decrypt": Decrypt text.
  * @param string $text
- *   Text to encrypt
- *
+ *   Text to encrypt.
  * @param array $options
- *   Array of options for encryption
- *
+ *   Array of options for encryption.
  * @param mixed $method
- *   String name of method to use.  Uses setting
- *   default if NULL
- *
+ *   String name of method to use.  Uses setting default if NULL.
  * @param mixed $key_provider
  *   The key provider used to fetch the encryption key. Uses default if NULL.
- *
  * @param string $config
  *   A configuration to use. Uses the default configuration if NULL.
  *
@@ -37,7 +31,7 @@
  *     and key provider.
  *   - "decrypt": The decrypted text.
  */
-function _encrypt_decrypt($op = 'encrypt', $text = '', $options = array(), $method = NULL, $key_provider = NULL, $config = NULL) {
+function _encrypt_decrypt($op = 'encrypt', $text = '', array $options = array(), $method = NULL, $key_provider = NULL, $config = NULL) {
   $encryption_array = array();
   $processed = '';
 
@@ -98,7 +92,7 @@ function _encrypt_decrypt($op = 'encrypt', $text = '', $options = array(), $meth
 
   // Get the encryption key from the default key provider.
   $key = encrypt_get_key_from_key_provider($key_provider, $provider_settings, $config);
-  if(!$key){
+  if (!$key) {
     drupal_set_message(t('The key from %key_provider could not be retrieved.', array('%key_provider' => $key_provider)), 'error');
     throw new Exception('Key not found');
   }

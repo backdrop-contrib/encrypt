@@ -3,6 +3,7 @@
 /**
  * @file
  * Plugin definition for the Drupal Private Key key provider.
+ *
  * THIS PROVIDER IS DEPRECATED AND SHOULD NOT BE USED FOR ENCRYPTION.
  */
 

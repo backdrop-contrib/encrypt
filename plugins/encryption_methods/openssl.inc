@@ -128,11 +128,17 @@ function _encrypt_encryption_methods_openssl($op, $text, $key, $options = array(
 /**
  * Generate a hash.
  *
- * @param string $hash_function Hash function
- * @param string $ikm Initial keying material
- * @param int $length Length of the key in bytes
- * @param string $salt Salt
- * @return string $key The generated key
+ * @param string $hash_function
+ *   Hash function.
+ * @param string $ikm
+ *   Initial keying material.
+ * @param int $length
+ *   Length of the key in bytes.
+ * @param string $salt
+ *   Salt.
+ *
+ * @return string
+ *   The generated key.
  */
 function _encrypt_encryption_methods_openssl_hkdf($hash_function, $ikm, $length, $salt) {
   $key = hash_hmac($hash_function, $ikm, $salt, TRUE);

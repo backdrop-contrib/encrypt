@@ -2,10 +2,9 @@
 
 /**
  * @file
- * Main Encrypt Drupal File
+ * Main Encrypt Drupal File.
  *
- * This file holds the main Drupal hook functions,
- * and API functions.
+ * This file holds the main Drupal hook functions, and API functions.
  *
  * @ingroup encrypt
  */
@@ -32,7 +31,12 @@ function encrypt_help($path, $arg) {
       if (!function_exists('mcrypt_encrypt')) {
         $output .= '<p>' . t('Mcrypt is currently not installed or configured properly on your server. If you would like to use the "Mcrypt AES (CBC Mode)" method for encryption, follow the instructions for <a href="http://www.php.net/manual/en/mcrypt.setup.php">installing Mcrypt</a>.') . '</p>';
       }
-
+      if (module_exists('advanced_help_hint')) {
+        $output .= advanced_help_hint_docs('encrypt', 'https://www.drupal.org/docs/7/modules/encrypt-documentation', TRUE);
+      }
+      else {
+        $output .= t('<p>Install and enable <a href="https://www.drupal.org/project/advanced_help_hint"><strong>Advanced Help Hint</strong></a> to get links to more help here.</p>');
+      }
       return $output;
   }
 }
@@ -346,7 +350,7 @@ function encrypt_get_default_config($reset = FALSE) {
  * @param bool $messages
  *   TRUE if messages should be displayed.
  */
-function encrypt_save_config($fields, $messages = TRUE) {
+function encrypt_save_config(array $fields, $messages = TRUE) {
   // Serialize any field that is an array.
   foreach ($fields as $key => $field) {
     if (is_array($field)) {
@@ -414,7 +418,6 @@ function encrypt_get_encryption_method($method = NULL) {
  *
  * @param bool $all
  *   A flag indicating whether to include plugins with unmet dependencies.
- *
  * @param bool $reset
  *   A flag indicating whether to clear the plugin cache. Otherwise, this
  *   function may return stale data if plugin properties have changed.
@@ -460,7 +463,6 @@ function encrypt_get_key_provider($provider = NULL) {
  *
  * @param bool $all
  *   A flag indicating whether to include plugins with unmet dependencies.
- *
  * @param bool $reset
  *   A flag indicating whether to clear the plugin cache. Otherwise, this
  *   function may return stale data if plugin properties have changed.
@@ -486,14 +488,13 @@ function encrypt_get_key_providers($all = TRUE, $reset = FALSE) {
  *   The key provider to retrieve the key for. Can be either the fully-loaded
  *   provider (from encrypt_get_key_provider() or the name of the provider. If
  *   NULL, it assumes the default key provider.
- *
  * @param array $config
- * The selected configuration.
+ *   The selected configuration.
  *
  * @return string
  *   The key.
  */
-function encrypt_get_key_from_key_provider($provider = NULL, $provider_settings = array(), $config = array()) {
+function encrypt_get_key_from_key_provider($provider = NULL, $provider_settings = array(), array $config = array()) {
 
   $keys = &drupal_static(__FUNCTION__);
 
@@ -537,8 +538,8 @@ function _encrypt_plugin_process(&$plugin, $info) {
 }
 
 /**
- * Helper function to determine if a plugin has unmet dependencies. 
- * 
+ * Helper function to determine if a plugin has unmet dependencies.
+ *
  * Most helpful in conjunction with array_filter().
  *
  * @param array $plugin
@@ -547,7 +548,7 @@ function _encrypt_plugin_process(&$plugin, $info) {
  * @return bool
  *   Whether or not the plugin is valid (has no unmet dependencies).
  */
-function _encrypt_plugin_is_valid($plugin) {
+function _encrypt_plugin_is_valid(array $plugin) {
   if (isset($plugin['dependency errors']) && !empty($plugin['dependency errors'])) {
     return FALSE;
   }
@@ -572,24 +573,20 @@ function _encrypt_clear_plugin_cache($type = NULL) {
  * Encrypt text.
  *
  * @param string $text
- *   Text to encrypt
- *
+ *   Text to encrypt.
  * @param array $options
- *   Array of options for encryption
- *
+ *   Array of options for encryption.
  * @param mixed $method
- *   String name of method to use. Uses setting default if NULL
- *
+ *   String name of method to use. Uses setting default if NULL.
  * @param mixed $key_provider
- *   String name of provider to use. Uses setting default if NULL
- *
+ *   String name of provider to use. Uses setting default if NULL.
  * @param mixed $config
  *   A configuration to use. Uses the default configuration if NULL.
  *
  * @return string
  *   A serialized array containing the encrypted text and encryption method.
  */
-function encrypt($text = '', $options = array(), $method = NULL, $key_provider = NULL, $config = NULL) {
+function encrypt($text = '', array $options = array(), $method = NULL, $key_provider = NULL, $config = NULL) {
   module_load_include('inc', 'encrypt', 'includes/encrypt.encrypt');
   return _encrypt_decrypt('encrypt', $text, $options, $method, $key_provider, $config);
 }
@@ -598,24 +595,20 @@ function encrypt($text = '', $options = array(), $method = NULL, $key_provider =
  * Decrypt text.
  *
  * @param string $text
- *   Text to decrypt
- *
+ *   Text to decrypt.
  * @param array $options
- *   Array of options for decryption
- *
+ *   Array of options for decryption.
  * @param mixed $method
- *   String name of method to use. Uses setting default if NULL
- *
+ *   String name of method to use. Uses setting default if NULL.
  * @param mixed $key_provider
- *   String name of provider to use. Uses setting default if NULL
- *
+ *   String name of provider to use. Uses setting default if NULL.
  * @param mixed $config
  *   A configuration to use. Uses the default configuration if NULL.
  *
  * @return string
- *   Decrypted text
+ *   Decrypted text.
  */
-function decrypt($text = '', $options = array(), $method = NULL, $key_provider = NULL, $config = NULL) {
+function decrypt($text = '', array $options = array(), $method = NULL, $key_provider = NULL, $config = NULL) {
   module_load_include('inc', 'encrypt', 'includes/encrypt.encrypt');
   return _encrypt_decrypt('decrypt', $text, $options, $method, $key_provider, $config);
 }

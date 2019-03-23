@@ -2,5 +2,4 @@ name = Encryption Method Test
 description = Module for testing encryption method plugins.
 package = Testing
 core = 7.x
-version = VERSION
 hidden = TRUE

@@ -3,6 +3,7 @@
 /**
  * @file
  * Plugin definition for the Default encryption method.
+ *
  * THIS METHOD IS DEPRECATED AND SHOULD NOT BE USED FOR ENCRYPTION.
  */
 

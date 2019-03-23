@@ -13,7 +13,7 @@ $plugin = encrypt_mcrypt_aes_cbc_encrypt_encryption_methods();
 function encrypt_mcrypt_aes_cbc_encrypt_encryption_methods() {
   return array(
     'title' => t('Mcrypt AES (CBC Mode)'),
-    'description' => t('Uses PHP\'s Mcrypt extension and AES in CBC mode. The key MUST be 16, 24, or 32 bytes.'),
+    'description' => t("Uses PHP's Mcrypt extension and AES in CBC mode. The key MUST be 16, 24, or 32 bytes."),
     'encrypt callback' => '_encrypt_encryption_methods_mcrypt_aes_cbc',
     'dependency callback' => '_encrypt_mcrypt_extension_is_present',
   );
@@ -151,11 +151,17 @@ function _encrypt_encryption_methods_mcrypt_aes_cbc($op, $text, $key, $options =
 /**
  * Generate a hash.
  *
- * @param string $hash_function Hash function
- * @param string $ikm Initial keying material
- * @param int $length Length of the key in bytes
- * @param string $salt Salt
- * @return string $key The generated key
+ * @param string $hash_function
+ *   Hash function.
+ * @param string $ikm
+ *   Initial keying material.
+ * @param int $length
+ *   Length of the key in bytes.
+ * @param string $salt
+ *   Salt.
+ *
+ * @return string
+ *   The generated key.
  */
 function _encrypt_encryption_methods_mcrypt_aes_cbc_hkdf($hash_function, $ikm, $length, $salt) {
   $key = hash_hmac($hash_function, $ikm, $salt, TRUE);

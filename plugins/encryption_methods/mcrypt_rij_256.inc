@@ -3,6 +3,7 @@
 /**
  * @file
  * Plugin definition for the Mcrypt extension and Rijndael 256 cipher.
+ *
  * THIS METHOD IS DEPRECATED AND SHOULD NOT BE USED FOR ENCRYPTION.
  */
 
@@ -18,7 +19,7 @@ $plugin = encrypt_mcrypt_rij_256_encrypt_encryption_methods();
 function encrypt_mcrypt_rij_256_encrypt_encryption_methods() {
   return array(
     'title' => t('Mcrypt Rijndael 256'),
-    'description' => t('Uses PHP\'s Mcrypt extension and Rijndael 256.'),
+    'description' => t("Uses PHP's Mcrypt extension and Rijndael 256."),
     'encrypt callback' => '_encrypt_encryption_methods_mcrypt_rij_256',
     'dependency callback' => '_encrypt_mcrypt_extension_is_present',
     'deprecated' => TRUE,
@@ -44,7 +45,7 @@ function _encrypt_encryption_methods_mcrypt_rij_256($op, $text, $key, $options =
 
   // Check op.
   if ($op == 'decrypt') {
-    // Check if we are disabling base64 encoding
+    // Check if we are disabling base64 encoding.
     if (!$disable_base64) {
       $text = base64_decode($text);
     }
@@ -56,7 +57,7 @@ function _encrypt_encryption_methods_mcrypt_rij_256($op, $text, $key, $options =
     // Encrypt.
     $processed_text = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $key, $text, MCRYPT_MODE_ECB, $iv);
 
-    // Check if we are disabling base64 encoding
+    // Check if we are disabling base64 encoding.
     if (!$disable_base64) {
       $processed_text = base64_encode($processed_text);
     }

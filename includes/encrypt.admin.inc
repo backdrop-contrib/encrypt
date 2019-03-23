@@ -26,7 +26,7 @@ function encrypt_configs_list() {
   );
   $rows = array();
 
-  foreach ($configs as $key => $config) {
+  foreach ($configs as $config) {
     $label = $config['label'];
     $name = $config['name'];
     $description = $config['description'];
@@ -100,7 +100,7 @@ function encrypt_configs_list() {
  * @see encrypt_config_form_submit()
  * @ingroup forms
  */
-function encrypt_config_form($form, &$form_state, $config = NULL) {
+function encrypt_config_form($form, &$form_state, array $config = NULL) {
   $default_config = variable_get('encrypt_default_config', NULL);
 
   // Clear the plugin cache on the first page load (but not on AJAX refreshes).
@@ -520,7 +520,7 @@ function encrypt_admin_settings($form, &$form_state) {
  *
  * @ingroup themeable
  */
-function theme_encrypt_configs_list_description($variables) {
+function theme_encrypt_configs_list_description(array $variables) {
   $label = $variables['label'];
   $name = $variables['name'];
   $description = $variables['description'];
