@@ -48,6 +48,10 @@ function _encrypt_decrypt($op = 'encrypt', $text = '', array $options = array(),
   if ($op == 'decrypt') {
     // The text may not actually be serialized, so suppress the warning.
     $encryption_array = @unserialize($text);
+    if (!function_exists('mcrypt_module_open') && function_exists('openssl_encrypt') && 'mcrypt_aes_cbc' == $encryption_array['method']) {
+      // Fallback if MCrypt is depreciated and OpenSSL exists.
+      $encryption_array['method'] = 'openssl';
+    }
 
     $method = isset($encryption_array['method']) ? $encryption_array['method'] : $method;
     $key_provider = isset($encryption_array['key_provider']) ? $encryption_array['key_provider'] : $key_provider;
