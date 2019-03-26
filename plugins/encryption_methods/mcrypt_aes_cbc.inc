@@ -20,6 +20,22 @@ function encrypt_mcrypt_aes_cbc_encrypt_encryption_methods() {
 }
 
 /**
+ * Wrapper around mcrypt_module_open() which throws an exception on error.
+ *
+ * @throws Exception
+ */
+function _encrypt_encryption_mcrypt_module_open($algorithm, $algorithm_directory, $mode, $mode_directory) {
+  if (!function_exists('mcrypt_module_open')) {
+    throw new Exception('mcrypt_module_open() does not exist.');
+  }
+  $result = mcrypt_module_open($algorithm, $algorithm_directory, $mode, $mode_directory);
+  if (!$result) {
+    throw new Exception('mcrypt_module_open() returned FALSE.');
+  }
+  return $result;
+}
+
+/**
  * Callback for Encrypt implementation: Mcrypt AES in CBC mode.
  *
  * This method uses PHP's Mcrypt extension and AES in CBC mode. Base64
@@ -30,7 +46,7 @@ function _encrypt_encryption_methods_mcrypt_aes_cbc($op, $text, $key, $options =
   $disable_base64 = array_key_exists('base64', $options) && $options['base64'] == FALSE;
 
   // Open the Mcrypt handle.
-  $mcrypt = mcrypt_module_open(MCRYPT_RIJNDAEL_128, '', MCRYPT_MODE_CBC, '');
+  $mcrypt = _encrypt_encryption_mcrypt_module_open(MCRYPT_RIJNDAEL_128, '', MCRYPT_MODE_CBC, '');
   $iv_size = mcrypt_enc_get_iv_size($mcrypt);
   $block_size = mcrypt_enc_get_block_size($mcrypt);
   $hash_function = 'sha256';
