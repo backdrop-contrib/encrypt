@@ -1,9 +1,6 @@
 name = Encrypt
 description = Provides an API for two-way encryption
-core = 7.x
+backdrop = 1.x
+type = module
 configure = admin/config/system/encrypt
 package = Encryption
-
-files[] = encrypt.test
-
-dependencies[] = ctools

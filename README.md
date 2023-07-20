@@ -1,53 +1,41 @@
-# CONTENTS OF THIS FILE
-
-* Introduction
-* Requirements
-* Recommended modules
-* Installation
-* Configuration
-
-
-# INTRODUCTION
+Encrypt
+=======
 
 This module is an API that other modules can use to encrypt data. It
 doesn't provide any user-facing features of its own, aside from
 administration pages to manage configuration.
 
-#REQUIREMENTS
+The encrypt module Provides an API for two-way encryption. Backdrop has no native way to do two-way encryption. PHP's ability to do two-way encryption is a little more involved than most people care to get into.  This module provides an easy way to encrypt() and decrypt().
 
-* [Chaos Tool Suite][1]:  
-  All encryption methods and key providers are implemented as **Chaos
-  Tool Suite** plugins.
+Installation
+------------
 
-#RECOMMENDED MODULES
+Install this module using the official Backdrop CMS instructions at <https://backdropcms.org/guide/modules>.
 
-* [Advanced Help Hint][5]:  
-  Links help text provided by `hook_help` to online help and
-  **Advanced Help**.
-* [Advanced Help][4]:  
-  When this module is enabled, additional on screen help will be
-  available.
-* [Markdown][6]:  
-  When this module is enabled, display of the project's `README.md`
-  will be rendered with the markdown filter.
-
-#INSTALLATION
-
-Install as you would normally install a contributed drupal
- module. See: [Installing modules][7] for further information.
-
-#CONFIGURATION
+Configuration
+-------------
 
 **Encrypt** allows multiple configurations to be managed within a
-Drupal site. Each configuration contains an encryption method and a
+Backdrop site. Each configuration contains an encryption method and a
 key provider, along with any additional settings that the method or
 provider requires.
 
-The [advanced help](/admin/help/ah/encrypt) framework provides more
-information (if it is enabled for the site).
+License
+-------
 
-[1]: https://www.drupal.org/project/ctools
-[4]: https://www.drupal.org/project/advanced_help
-[5]: https://www.drupal.org/project/advanced_help_hint
-[6]: https://www.drupal.org/project/markdown
-[7]: https://drupal.org/documentation/install/modules-themes/modules-7
+This project is GPL v2 software. See the LICENSE.txt file in this directory for complete text.
+
+Maintainers
+-----------
+
+* Herb v/d Dool <https://github.com/herbdool>
+
+Credits
+-------
+
+Drupal version currently maintained by:
+
+* <https://www.drupal.org/u/rlhawk>
+* <https://www.drupal.org/u/greggles>
+* <https://www.drupal.org/u/nerdstein>
+* <https://www.drupal.org/u/theunraveler>
