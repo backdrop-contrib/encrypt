@@ -4,3 +4,4 @@ backdrop = 1.x
 type = module
 configure = admin/config/system/encrypt
 package = Encryption
+dependencies[] = plugin_manager

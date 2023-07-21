@@ -1,0 +1,23 @@
+[EncryptEncryptDecryptTest]
+name = Encrypt and Decrypt a String
+description = Test basic encrypting and decripting of a string.
+group = Encrypt
+file = encrypt.test
+
+[EncryptPortability]
+name = Encryption Portability tests
+description = Test to make sure an encryption array carries its encryption method and key provider with it to ensure portability.
+group = Encrypt
+file = encrypt.test
+
+[EncryptEncryptionMethodPluginsTest]
+name = Encryption Method and Key Providers Plugin tests
+description = Test encryption method and key provider implementation.
+group = Encrypt
+file = encrypt.test
+
+[EncryptConfigTest]
+name = Configuration Management
+description = Test basic management of configuration including adding, editing, and deleting.
+group = Encrypt
+file = encrypt.test

@@ -30,7 +30,7 @@ function encrypt_get_file_key($settings) {
   $file_name = $settings['path'] . '/' . ENCRYPT_FILE_NAME;
   // If the file doesn't exist, just abort.
   if (!file_exists($file_name)) {
-    drupal_set_message(t('The file %file does not exist! Encrypt cannot retrieve encryption key.', array('%file' => $file_name)), 'error');
+    backdrop_set_message(t('The file %file does not exist! Encrypt cannot retrieve encryption key.', array('%file' => $file_name)), 'error');
     return;
   }
 
@@ -68,7 +68,7 @@ function encrypt_file_key_settings_form($defaults) {
   $form['path'] = array(
     '#type' => 'textfield',
     '#title' => t('Path to Key File'),
-    '#description' => t('Filepath may be absolute (e.g. %abs) or relative to the Drupal directory (e.g. %rel).', array(
+    '#description' => t('Filepath may be absolute (e.g. %abs) or relative to the Backdrop directory (e.g. %rel).', array(
       '%abs' => '/var/www',
       '%rel' => '../../keys',
     )),
@@ -127,7 +127,7 @@ function encrypt_file_key_settings_form_submit($form, $form_state) {
 
   // Create a default key.
   $open_file = fopen($file, 'wb');
-  $key = drupal_random_bytes(16);
+  $key = backdrop_random_bytes(16);
   // Base64 encode the key, if required.
   if ($form_state['values']['encrypt_key_providers_file_settings']['method'] == 'base64_decode') {
     $key = base64_encode($key);
@@ -136,9 +136,9 @@ function encrypt_file_key_settings_form_submit($form, $form_state) {
   fclose($open_file);
 
   // Ensure that the file is only readable and writable by owner.
-  drupal_chmod($file, 0600);
+  backdrop_chmod($file, 0600);
 
-  drupal_set_message(t('The key file has been written to %file', array(
+  backdrop_set_message(t('The key file has been written to %file', array(
     '%file' => $file,
   )));
 }

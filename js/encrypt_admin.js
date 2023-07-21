@@ -5,28 +5,28 @@
 
 (function ($) {
   'use strict';
-  Drupal.behaviors.encryptFieldsetSummaries = {
+  Backdrop.behaviors.encryptFieldsetSummaries = {
     attach: function (context) {
       // Provide the vertical tab summaries.
-      $('fieldset#edit-method-settings', context).drupalSetSummary(function (context) {
+      $('fieldset#edit-method-settings', context).backdropSetSummary(function (context) {
         var vals = [];
         var label = $('#edit-encrypt-encryption-method input:checked', context).next('label');
         if (label.text()) {
-          vals.push(Drupal.checkPlain(label.text()));
+          vals.push(Backdrop.checkPlain(label.text()));
         }
         else {
-          vals.push(Drupal.t('No method chosen'));
+          vals.push(Backdrop.t('No method chosen'));
         }
         return vals.join(', ');
       });
-      $('fieldset#edit-provider-settings', context).drupalSetSummary(function (context) {
+      $('fieldset#edit-provider-settings', context).backdropSetSummary(function (context) {
         var vals = [];
         var label = $('#edit-encrypt-key-provider input:checked', context).next('label');
         if (label.text()) {
-          vals.push(Drupal.checkPlain(label.text()));
+          vals.push(Backdrop.checkPlain(label.text()));
         }
         else {
-          vals.push(Drupal.t('No provider chosen'));
+          vals.push(Backdrop.t('No provider chosen'));
         }
         return vals.join(', ');
       });

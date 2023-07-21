@@ -13,7 +13,7 @@ $plugin = encrypt_phpseclib_encrypt_encryption_methods();
 function encrypt_phpseclib_encrypt_encryption_methods() {
   return array(
     'title' => t('PHP Secure Communications Library (phpseclib)'),
-    'description' => t('Uses the <a href="http://phpseclib.sourceforge.net/">phpseclib</a> library. This method is only preferable if you cannot install mcrypt.'),
+    'description' => t('Uses the <a href="http://phpseclib.sourceforge.net/">phpseclib</a> library. This method is only preferable if you cannot use openssl nor mcrypt.'),
     'encrypt callback' => '_encrypt_encryption_methods_phpseclib',
     'dependency callback' => '_encrypt_phpseclib_dependencies',
   );
@@ -61,10 +61,10 @@ function _encrypt_phpseclib_dependencies() {
   $errors = array();
 
   if (!module_exists('libraries')) {
-    $errors[] = t('You must download and enable the <a href="http://drupal.org/project/libraries">Libraries API</a> module.');
+    $errors[] = t('You must download and enable the <a href="https://backdropcms.org/project/libraries">Libraries API</a> module.');
   }
   elseif (!libraries_get_path('phpseclib')) {
-    $errors[] = t('You must download the <a href="http://phpseclib.sourceforge.net/">phpseclib</a> library and place it in either sites/all/libraries or sites/yourdomain/libraries.');
+    $errors[] = t('You must download the latest 2.x release of the <a href="https://github.com/phpseclib/phpseclib/releases/">phpseclib</a> library and place it in either /libraries or sites/yourdomain/libraries as phpseclib/.');
   }
 
   return $errors;

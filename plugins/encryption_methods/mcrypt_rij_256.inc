@@ -36,7 +36,7 @@ function _encrypt_encryption_methods_mcrypt_rij_256($op, $text, $key, $options =
   $processed_text = '';
 
   // Key cannot be too long for this encryption.
-  $key = drupal_substr($key, 0, 32);
+  $key = backdrop_substr($key, 0, 32);
 
   // Define iv cipher.
   $iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);

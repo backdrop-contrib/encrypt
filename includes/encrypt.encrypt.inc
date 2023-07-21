@@ -49,7 +49,7 @@ function _encrypt_decrypt($op = 'encrypt', $text = '', array $options = array(),
     // The text may not actually be serialized, so suppress the warning.
     $encryption_array = @unserialize($text);
     if (!function_exists('mcrypt_module_open') && function_exists('openssl_encrypt') && 'mcrypt_aes_cbc' == $encryption_array['method']) {
-      // Fallback if MCrypt is depreciated and OpenSSL exists.
+      // Fallback if MCrypt is deprecated and OpenSSL exists.
       $encryption_array['method'] = 'openssl';
     }
 
@@ -97,13 +97,13 @@ function _encrypt_decrypt($op = 'encrypt', $text = '', array $options = array(),
   // Get the encryption key from the default key provider.
   $key = encrypt_get_key_from_key_provider($key_provider, $provider_settings, $config);
   if (!$key) {
-    drupal_set_message(t('The key from %key_provider could not be retrieved.', array('%key_provider' => $key_provider)), 'error');
+    backdrop_set_message(t('The key from %key_provider could not be retrieved.', array('%key_provider' => $key_provider)), 'error');
     throw new Exception('Key not found');
   }
 
   // Call callback function for encryption and decryption.
   $encryption_method = encrypt_get_encryption_method($method);
-  $function = ctools_plugin_get_function($encryption_method, 'encrypt callback');
+  $function = plugin_manager_plugin_get_function($encryption_method, 'encrypt callback');
   $processed = call_user_func($function, $op, $text, $key, $options, $config);
 
   // Check for returned value.

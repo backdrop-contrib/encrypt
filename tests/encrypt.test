@@ -8,18 +8,7 @@
 /**
  * Test basic encryption and decryption.
  */
-class EncryptEncryptDecryptTest extends DrupalWebTestCase {
-
-  /**
-   * Implements getInfo().
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'Encrypt and Decrypt a String',
-      'description' => 'Test basic encrypting and decripting of a string.',
-      'group' => 'Encrypt',
-    );
-  }
+class EncryptEncryptDecryptTest extends BackdropWebTestCase {
 
   /**
    * Enable encrypt module.
@@ -84,18 +73,7 @@ class EncryptEncryptDecryptTest extends DrupalWebTestCase {
  *
  * Ensure that they are encryptable and decryptable in different environments.
  */
-class EncryptPortability extends DrupalWebTestCase {
-
-  /**
-   * Implements getInfo().
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'Encryption Portability tests',
-      'description' => 'Test to make sure an encryption array carries its encryption method and key provider with it to ensure portability.',
-      'group' => 'Encrypt',
-    );
-  }
+class EncryptPortability extends BackdropWebTestCase {
 
   /**
    * Enable encrypt module.
@@ -110,11 +88,11 @@ class EncryptPortability extends DrupalWebTestCase {
   public function testMethodAndKeyProviderPortability() {
     // Generate some text to encrypt and encrypt it.
     $text = $this->randomName(10);
-    $encrypted = encrypt($text, array(), 'mcrypt_aes_cbc', 'drupal_variable');
+    $encrypted = encrypt($text, array(), 'mcrypt_aes_cbc', 'backdrop_variable');
     $encrypted_array = unserialize($encrypted);
 
     $this->assertEqual($encrypted_array['method'], 'mcrypt_aes_cbc', t('Encryption method is stored with an encrypted value.'));
-    $this->assertEqual($encrypted_array['key_provider'], 'drupal_variable', t('Key provider is stored with an encrypted value.'));
+    $this->assertEqual($encrypted_array['key_provider'], 'backdrop_variable', t('Key provider is stored with an encrypted value.'));
   }
 
   /**
@@ -125,7 +103,7 @@ class EncryptPortability extends DrupalWebTestCase {
   public function testDecryptingRandomValue() {
     // Generate some text and encrypt it.
     $text = $this->randomName(10);
-    $encrypted = encrypt($text, array(), 'mcrypt_aes_cbc', 'drupal_variable');
+    $encrypted = encrypt($text, array(), 'mcrypt_aes_cbc', 'backdrop_variable');
     $encrypted_array = unserialize($encrypted);
 
     // First, just check to see that the value was actually encrypted.
@@ -165,33 +143,22 @@ class EncryptPortability extends DrupalWebTestCase {
 /**
  * Test encryption method hooks.
  */
-class EncryptEncryptionMethodPluginsTest extends DrupalWebTestCase {
-
-  /**
-   * Implements getInfo().
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'Encryption Method and Key Providers Plugin tests',
-      'description' => 'Test encryption method and key provider implementation.',
-      'group' => 'Encrypt',
-    );
-  }
+class EncryptEncryptionMethodPluginsTest extends BackdropWebTestCase {
 
   /**
    * Enable encrypt module.
    */
   public function setUp() {
     parent::setUp('encrypt', 'encrypt_test');
-    $adminUser = $this->drupalCreateUser(array('administer encrypt'));
-    $this->drupalLogin($adminUser);
+    $adminUser = $this->backdropCreateUser(array('administer encrypt'));
+    $this->backdropLogin($adminUser);
   }
 
   /**
    * The declared encryption method appears on the add configuration page.
    */
   public function testPluginsAppearInList() {
-    $this->drupalGet('admin/config/system/encrypt/add');
+    $this->backdropGet('admin/config/system/encrypt/add');
     $this->assertText('Test Method', t('Encryption method name is present.'));
     $this->assertText('This is just a test encryption method.', t('Encryption method description is present.'));
     $this->assertText('Test Key Provider', t('Key provider name is present.'));
@@ -203,18 +170,18 @@ class EncryptEncryptionMethodPluginsTest extends DrupalWebTestCase {
    */
   public function testPluginDependencies() {
     // First, set the variable to trigger our unmet dependency.
-    variable_set('encrypt_test_trigger_unmet_deps', TRUE);
+    config_set('encrypt.settings', 'encrypt_test_trigger_unmet_deps', TRUE);
 
     // Then make sure dependency errors appear on the page, and the method
     // cannot be enabled.
-    $this->drupalGet('admin/config/system/encrypt/add');
+    $this->backdropGet('admin/config/system/encrypt/add');
     $this->assertText('This is an unmet dependency.');
     $this->assertFieldByXPath('//input[@name="encrypt_encryption_method" and @value="test" and @disabled]');
 
     // Now disable the unmet dependency and make sure all is OK. Note that this
     // should also implicitly test the plugin cache-clearing mechanism.
-    variable_set('encrypt_test_trigger_unmet_deps', FALSE);
-    $this->drupalGet('admin/config/system/encrypt');
+    config_set('encrypt.settings', 'encrypt_test_trigger_unmet_deps', FALSE);
+    $this->backdropGet('admin/config/system/encrypt');
     $this->assertNoText('This is an unmet dependency.');
     $this->assertNoFieldByXPath('//input[@name="encrypt_encryption_method" and @value="test" and @disabled]');
   }
@@ -224,20 +191,9 @@ class EncryptEncryptionMethodPluginsTest extends DrupalWebTestCase {
 /**
  * Test configurations.
  */
-class EncryptConfigTest extends DrupalWebTestCase {
+class EncryptConfigTest extends BackdropWebTestCase {
 
   protected $privilegedUser;
-
-  /**
-   * Implements getInfo().
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'Configuration Management',
-      'description' => 'Test basic management of configuration, including adding, editing, and deleting.',
-      'group' => 'Encrypt',
-    );
-  }
 
   /**
    * Enable encrypt module; create and log in privileged user.
@@ -245,8 +201,8 @@ class EncryptConfigTest extends DrupalWebTestCase {
   public function setUp() {
     parent::setUp('encrypt');
 
-    $this->privilegedUser = $this->drupalCreateUser(array('administer encrypt'));
-    $this->drupalLogin($this->privilegedUser);
+    $this->privilegedUser = $this->backdropCreateUser(array('administer encrypt'));
+    $this->backdropLogin($this->privilegedUser);
   }
 
   /**
@@ -279,8 +235,8 @@ class EncryptConfigTest extends DrupalWebTestCase {
     $fields['description'] = t('This is the original description.');
     $fields['enabled'] = FALSE;
     $fields['encrypt_encryption_method'] = 'mcrypt_aes_cbc';
-    $fields['encrypt_key_provider'] = 'drupal_variable';
-    $this->drupalPost('admin/config/system/encrypt/add', $fields, t('Save configuration'));
+    $fields['encrypt_key_provider'] = 'backdrop_variable';
+    $this->backdropPost('admin/config/system/encrypt/add', $fields, t('Save configuration'));
     $this->assertText(t('The configuration @label has been added.', array('@label' => $fields['label'])));
 
     // Load the test configuration.
@@ -291,11 +247,11 @@ class EncryptConfigTest extends DrupalWebTestCase {
     $edit_fields = $fields;
     unset($edit_fields['name']);
     $edit_fields['description'] = t('This is the edited description.');
-    $this->drupalPost('admin/config/system/encrypt/edit/' . $fields['name'], $edit_fields, t('Save configuration'));
+    $this->backdropPost('admin/config/system/encrypt/edit/' . $fields['name'], $edit_fields, t('Save configuration'));
     $this->assertText(t('The configuration @label has been updated.', array('@label' => $fields['label'])));
 
     // Make the test configuration the default.
-    $this->drupalGet('admin/config/system/encrypt/default/' . $fields['name']);
+    $this->backdropGet('admin/config/system/encrypt/default/' . $fields['name']);
     $this->assertText(t('The configuration @label has been made the default.', array('@label' => $fields['label'])));
     $default_config = encrypt_get_default_config(TRUE);
     $this->assertTrue($default_config['name'] == $fields['name'], 'The test configuration is the default.');
@@ -303,13 +259,13 @@ class EncryptConfigTest extends DrupalWebTestCase {
     $this->assertTrue($test_config['enabled'], 'The test configuration is enabled.');
 
     // Ensure that the default configuration cannot be deleted.
-    $this->drupalGet('admin/config/system/encrypt/delete/' . $default_config['name']);
+    $this->backdropGet('admin/config/system/encrypt/delete/' . $default_config['name']);
     $this->assertText(t('The default configuration cannot be deleted.'));
 
     // Make the test configuration not the default, then delete it.
-    $this->drupalGet('admin/config/system/encrypt/default/default');
-    $this->drupalGet('admin/config/system/encrypt/delete/' . $fields['name']);
-    $this->drupalPost(NULL, array(), t('Delete'));
+    $this->backdropGet('admin/config/system/encrypt/default/default');
+    $this->backdropGet('admin/config/system/encrypt/delete/' . $fields['name']);
+    $this->backdropPost(NULL, array(), t('Delete'));
     $this->assertText(t('The configuration @label has been deleted.', array('@label' => $fields['label'])));
   }
 
