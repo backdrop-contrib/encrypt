@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Plugin definition for the Backdrop Private Key key provider.
+ * Plugin definition for the Backdrop Variable key provider.
  */
 
 $plugin = encrypt_backdrop_variable_encrypt_key_providers();

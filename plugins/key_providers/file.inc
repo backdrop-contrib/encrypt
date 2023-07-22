@@ -61,7 +61,7 @@ function encrypt_file_key_settings_form($defaults) {
   );
   // Add the MD5 option, if it is already being used, but flag it as
   // not recommended.
-  if ($defaults['method'] == 'md5') {
+  if (isset($defaults['method']) && $defaults['method'] == 'md5') {
     $options['md5'] = t('MD5 (not recommended)');
   }
 

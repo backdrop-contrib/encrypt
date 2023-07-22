@@ -74,6 +74,22 @@ function encrypt_menu() {
 }
 
 /**
+ * Implements hook_config_info().
+ */
+function encrypt_config_info() {
+  $prefixes['encrypt.settings'] = array(
+    'label' => t('Encrypt settings'),
+    'group' => t('Configuration'),
+  );
+  $prefixes['encrypt.profile'] = array(
+    'name_key' => 'name',
+    'label_key' => 'label',
+    'group' => t('Encrypt'),
+  );
+  return $prefixes;
+}
+
+/**
  * Implements hook_permission().
  */
 function encrypt_permission() {
@@ -157,25 +173,11 @@ function encrypt_get_configs($reset = FALSE) {
   static $configs = array();
 
   if (!$configs || $reset) {
-    // For backward compatibility, make sure the table exists.
-    if (db_table_exists('encrypt_config')) {
-      $configs = db_query("SELECT * FROM {encrypt_config} ORDER BY label ASC")->fetchAllAssoc('name', PDO::FETCH_ASSOC);
-    }
-    else {
-      _encrypt_display_update_message();
-      $configs = array();
-    }
+    $profile_names = config_get_names_with_prefix('encrypt.profile');
 
-    // Unserialize fields with serialized data.
-    foreach ($configs as $key => $config) {
-      if (!empty($config['method_settings'])) {
-        $method_settings = unserialize($config['method_settings']);
-        $configs[$key]['method_settings'] = $method_settings;
-      }
-      if (!empty($config['provider_settings'])) {
-        $provider_settings = unserialize($config['provider_settings']);
-        $configs[$key]['provider_settings'] = $provider_settings;
-      }
+    foreach ($profile_names as $profile) {
+      $profile_config = config_get($profile);
+      $configs[$profile_config['name']] = $profile_config;
     }
   }
 
@@ -314,40 +316,23 @@ function encrypt_get_default_config($reset = FALSE) {
  *   TRUE if messages should be displayed.
  */
 function encrypt_save_config(array $fields, $messages = TRUE) {
-  // Serialize any field that is an array.
+  $config = config('encrypt.profile.' . $fields['name']);
   foreach ($fields as $key => $field) {
-    if (is_array($field)) {
-      $fields[$key] = serialize($field);
-    }
+    $config->set($key, $field);
   }
-
-  // If the created field is empty, set it to the request time.
-  if (empty($fields['created'])) {
-    $fields['created'] = REQUEST_TIME;
-  }
-
-  // If the changed field is empty, set it to the request time.
-  if (empty($fields['changed'])) {
-    $fields['changed'] = REQUEST_TIME;
-  }
-
-  // Save the configuration.
-  $merge_status = db_merge('encrypt_config')
-    ->key(array('name' => $fields['name']))
-    ->fields($fields)
-    ->execute();
+  $config->save();
 
   // Display message and log to watchdog.
   if ($messages) {
     $t_args = array('%label' => $fields['label']);
 
-    switch ($merge_status) {
-      case MergeQuery::STATUS_INSERT:
+    switch ($config->isNew()) {
+      case TRUE:
         backdrop_set_message(t('The configuration %label has been added.', $t_args));
         watchdog('encrypt', 'Added encryption configuration %label.', $t_args, WATCHDOG_NOTICE, l(t('view'), ENCRYPT_MENU_PATH . '/list'));
         break;
 
-      case MergeQuery::STATUS_UPDATE:
+      case FALSE:
         backdrop_set_message(t('The configuration %label has been updated.', $t_args));
         watchdog('encrypt', 'Updated encryption configuration %label.', $t_args, WATCHDOG_NOTICE, l(t('view'), ENCRYPT_MENU_PATH . '/list'));
         break;

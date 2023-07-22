@@ -20,7 +20,6 @@ function encrypt_configs_list() {
     t('Name'),
     t('Encryption Method'),
     t('Key Provider'),
-    t('Created'),
     t('Status'),
     array('data' => t('Operations'), 'colspan' => '3'),
   );
@@ -32,7 +31,6 @@ function encrypt_configs_list() {
     $description = $config['description'];
     $method = $config['method'];
     $provider = $config['provider'];
-    $created = format_date($config['created'], 'short');
 
     $config_url_str = str_replace('_', '-', $name);
 
@@ -50,9 +48,6 @@ function encrypt_configs_list() {
 
     // Set the key provider column.
     $row[] = array('data' => $providers[$provider]['title']);
-
-    // Set the created column.
-    $row[] = array('data' => $created);
 
     // Set the status column.
     $status = array();
@@ -244,6 +239,7 @@ function encrypt_config_form($form, &$form_state, array $config = NULL) {
   else {
     $method = NULL;
   }
+  $method_settings = isset($config['method_settings']) ? $config['method_settings'] : array();
 
   if ($method) {
     if ($method_settings_form = plugin_manager_get_function($methods[$method], 'settings form')) {
@@ -252,7 +248,7 @@ function encrypt_config_form($form, &$form_state, array $config = NULL) {
         '#title' => t('Additional Encryption Method Settings'),
       );
 
-      $form['method_settings']['method_settings_wrapper']['method_settings']['encrypt_encryption_methods_' . $method . '_settings'] = array('#tree' => TRUE) + call_user_func($method_settings_form, $config['method_settings']);
+      $form['method_settings']['method_settings_wrapper']['method_settings']['encrypt_encryption_methods_' . $method . '_settings'] = array('#tree' => TRUE) + call_user_func($method_settings_form, $method_settings);
     }
   }
 
@@ -293,6 +289,7 @@ function encrypt_config_form($form, &$form_state, array $config = NULL) {
   else {
     $provider = NULL;
   }
+  $provider_settings = isset($config['provider_settings']) ? $config['provider_settings'] : array();
 
   if ($provider) {
     if ($provider_settings_form = plugin_manager_get_function($providers[$provider], 'settings form')) {
@@ -301,14 +298,9 @@ function encrypt_config_form($form, &$form_state, array $config = NULL) {
         '#title' => t('Additional Key Provider Settings'),
       );
 
-      $form['provider_settings']['key_settings_wrapper']['key_settings']['encrypt_key_providers_' . $provider . '_settings'] = array('#tree' => TRUE) + call_user_func($provider_settings_form, $config['provider_settings']);
+      $form['provider_settings']['key_settings_wrapper']['key_settings']['encrypt_key_providers_' . $provider . '_settings'] = array('#tree' => TRUE) + call_user_func($provider_settings_form, $provider_settings);
     }
   }
-
-  $form['created'] = array(
-    '#type' => 'value',
-    '#value' => isset($config['created']) ? $config['created'] : NULL,
-  );
 
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['submit'] = array(
@@ -365,7 +357,6 @@ function encrypt_config_form_submit($form, &$form_state) {
     'method' => (string) $form_state['values']['encrypt_encryption_method'],
     'provider' => (string) $form_state['values']['encrypt_key_provider'],
     'enabled' => (int) $form_state['values']['enabled'],
-    'created' => $form_state['values']['created'],
   );
 
   if (empty($form_state['values']['encrypt_encryption_methods_' . $fields['method'] . '_settings'])) {
@@ -424,9 +415,8 @@ function encrypt_config_delete_confirm($form, &$form_state, $config) {
  * @see encrypt_config_delete_confirm()
  */
 function encrypt_config_delete_confirm_submit($form, &$form_state) {
-  db_delete('encrypt_config')
-    ->condition('name', $form_state['values']['name'])
-    ->execute();
+  $config = config('encrypt.profile.' . $form_state['values']['name']);
+  $config->delete();
 
   $t_args = array('%label' => $form_state['values']['label']);
   backdrop_set_message(t('The configuration %label has been deleted.', $t_args));
@@ -448,10 +438,7 @@ function encrypt_config_make_default($config) {
   if ($default_config == $config['name']) {
     // If the configuration is not enabled and it's the new default, enable it.
     if (!$config['enabled']) {
-      db_update('encrypt_config')
-        ->fields(array('enabled' => 1))
-        ->condition('name', $config['name'])
-        ->execute();
+      config_set('encrypt.profile.' . $config['name'], 'enabled', 1);
       backdrop_set_message(t('The configuration %label has been enabled.', $t_args));
       watchdog('node', 'Enabled encryption configuration %label.', $t_args, WATCHDOG_NOTICE);
     }
