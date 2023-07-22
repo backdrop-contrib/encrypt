@@ -28,19 +28,19 @@ function encrypt_menu() {
 
   $items[ENCRYPT_MENU_PATH] = array(
     'title' => 'Encrypt',
-    'description' => 'Manage encryption configurations.',
+    'description' => 'Manage encryption profiles.',
     'page callback' => 'encrypt_configs_list',
     'access arguments' => array('administer encrypt'),
     'file' => 'includes/encrypt.admin.inc',
     'type' => MENU_NORMAL_ITEM,
   );
   $items[ENCRYPT_MENU_PATH . '/list'] = array(
-    'title' => 'List configurations',
+    'title' => 'List profiles',
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => -10,
   );
   $items[ENCRYPT_MENU_PATH . '/add'] = array(
-    'title' => 'Add configuration',
+    'title' => 'Add encryption profile',
     'page callback' => 'backdrop_get_form',
     'page arguments' => array('encrypt_config_form'),
     'access arguments' => array('administer encrypt'),
@@ -48,7 +48,7 @@ function encrypt_menu() {
     'type' => MENU_LOCAL_ACTION,
   );
   $items[ENCRYPT_MENU_PATH . '/edit/%encrypt_config'] = array(
-    'title' => 'Edit encryption configuration',
+    'title' => 'Edit encryption profile',
     'title callback' => 'encrypt_config_edit_title',
     'title arguments' => array(5),
     'page callback' => 'backdrop_get_form',
@@ -63,7 +63,7 @@ function encrypt_menu() {
     'file' => 'includes/encrypt.admin.inc',
   );
   $items[ENCRYPT_MENU_PATH . '/delete/%encrypt_config'] = array(
-    'title' => 'Delete encryption configuration',
+    'title' => 'Delete encryption profile',
     'page callback' => 'backdrop_get_form',
     'page arguments' => array('encrypt_config_delete_confirm', 5),
     'access arguments' => array('administer encrypt'),
@@ -84,7 +84,7 @@ function encrypt_config_info() {
   $prefixes['encrypt.profile'] = array(
     'name_key' => 'name',
     'label_key' => 'label',
-    'group' => t('Encrypt'),
+    'group' => t('Encryption Profiles'),
   );
   return $prefixes;
 }
@@ -161,13 +161,13 @@ function encrypt_plugin_manager_plugin_type() {
 }
 
 /**
- * Get all configurations.
+ * Get all profiles.
  *
  * @param bool $reset
- *   A flag to force the configurations to be retrieved from the database.
+ *   A flag to force the profiles to be retrieved from the database.
  *
  * @return array
- *   An array of configurations.
+ *   An array of profiles.
  */
 function encrypt_get_configs($reset = FALSE) {
   static $configs = array();
@@ -185,16 +185,16 @@ function encrypt_get_configs($reset = FALSE) {
 }
 
 /**
- * Get all configurations as options.
+ * Get all profiles as options.
  *
- * Useful for retrieving a list of configurations to be used as
+ * Useful for retrieving a list of profiles to be used as
  * #options in form elements such as select, checkboxes, and radios.
  *
  * @param bool $reset
- *   A flag to force the configurations to be retrieved from the database.
+ *   A flag to force the profiles to be retrieved from the database.
  *
  * @return array
- *   An array of key-value pairs. The key is the configuration's machine-
+ *   An array of key-value pairs. The key is the profile's machine-
  *   readable name and the value is its human-friendly label.
  */
 function encrypt_get_configs_as_options($reset = FALSE) {
@@ -212,15 +212,15 @@ function encrypt_get_configs_as_options($reset = FALSE) {
 }
 
 /**
- * Get one configuration.
+ * Get one profile.
  *
  * @param bool $name
- *   The machine name of the configuration to retrieve.
+ *   The machine name of the profile to retrieve.
  * @param bool $reset
- *   A flag to force the configuration to be retrieved from the database.
+ *   A flag to force the profile to be retrieved from the database.
  *
  * @return array
- *   An array with details for the requested configuration.
+ *   An array with details for the requested profile.
  */
 function encrypt_get_config($name = NULL, $reset = FALSE) {
   $configs = encrypt_get_configs($reset);
@@ -236,13 +236,13 @@ function encrypt_get_config($name = NULL, $reset = FALSE) {
 }
 
 /**
- * Get enabled configurations.
+ * Get enabled profiles.
  *
  * @param bool $reset
- *   A flag to force the configurations to be retrieved from the database.
+ *   A flag to force the profiles to be retrieved from the database.
  *
  * @return array
- *   An array of configurations that are enabled.
+ *   An array of profiles that are enabled.
  */
 function encrypt_get_enabled_configs($reset = FALSE) {
   static $enabled_configs = array();
@@ -261,16 +261,16 @@ function encrypt_get_enabled_configs($reset = FALSE) {
 }
 
 /**
- * Get enabled configurations as options.
+ * Get enabled profiles as options.
  *
- * Useful for retrieving a list of enabled configurations to be used as
+ * Useful for retrieving a list of enabled profiles to be used as
  * #options in form elements such as select, checkboxes, and radios.
  *
  * @param bool $reset
- *   A flag to force the configurations to be retrieved from the database.
+ *   A flag to force the profiles to be retrieved from the database.
  *
  * @return array
- *   An array of key-value pairs. The key is the configuration's machine-
+ *   An array of key-value pairs. The key is the profile's machine-
  *   readable name and the value is its human-friendly label.
  */
 function encrypt_get_enabled_configs_as_options($reset = FALSE) {
@@ -288,30 +288,30 @@ function encrypt_get_enabled_configs_as_options($reset = FALSE) {
 }
 
 /**
- * Get the default configuration.
+ * Get the default profile.
  *
  * @param bool $reset
- *   A flag to force the configuration to be retrieved from the database.
+ *   A flag to force the profile to be retrieved.
  *
  * @return array
- *   An array with details for the default configuration.
+ *   An array with details for the default profile.
  */
 function encrypt_get_default_config($reset = FALSE) {
   static $default_config = array();
 
   if (!$default_config || $reset) {
-    $default_config = config_get('encrypt.settings', 'default_config');
-    $default_config = encrypt_get_config($default_config, $reset);
+    $default_config_name = config_get('encrypt.settings', 'default_config');
+    $default_config = encrypt_get_config($default_config_name, $reset);
   }
 
   return $default_config;
 }
 
 /**
- * Save a configuration.
+ * Save a profile.
  *
  * @param array $fields
- *   The fields of the configuration to save.
+ *   The fields of the profile to save.
  * @param bool $messages
  *   TRUE if messages should be displayed.
  */
@@ -328,13 +328,13 @@ function encrypt_save_config(array $fields, $messages = TRUE) {
 
     switch ($config->isNew()) {
       case TRUE:
-        backdrop_set_message(t('The configuration %label has been added.', $t_args));
-        watchdog('encrypt', 'Added encryption configuration %label.', $t_args, WATCHDOG_NOTICE, l(t('view'), ENCRYPT_MENU_PATH . '/list'));
+        backdrop_set_message(t('The profile %label has been added.', $t_args));
+        watchdog('encrypt', 'Added encryption profile %label.', $t_args, WATCHDOG_NOTICE, l(t('view'), ENCRYPT_MENU_PATH . '/list'));
         break;
 
       case FALSE:
-        backdrop_set_message(t('The configuration %label has been updated.', $t_args));
-        watchdog('encrypt', 'Updated encryption configuration %label.', $t_args, WATCHDOG_NOTICE, l(t('view'), ENCRYPT_MENU_PATH . '/list'));
+        backdrop_set_message(t('The profile %label has been updated.', $t_args));
+        watchdog('encrypt', 'Updated encryption profile %label.', $t_args, WATCHDOG_NOTICE, l(t('view'), ENCRYPT_MENU_PATH . '/list'));
         break;
     }
   }
@@ -352,7 +352,7 @@ function encrypt_save_config(array $fields, $messages = TRUE) {
  */
 function encrypt_get_encryption_method($method = NULL) {
   // If the method was not specified, use the method
-  // from the default configuration.
+  // from the default profile.
   if (empty($method)) {
     $config = encrypt_get_default_config();
     $method = $config['method'];
@@ -395,7 +395,7 @@ function encrypt_get_encryption_methods($all = TRUE, $reset = FALSE) {
  */
 function encrypt_get_key_provider($provider = NULL) {
   // If the provider was not specified, use the provider
-  // from the default configuration.
+  // from the default profile.
   if (empty($provider)) {
     $config = encrypt_get_default_config();
     $provider = $config['provider'];
@@ -433,7 +433,7 @@ function encrypt_get_key_providers($all = TRUE, $reset = FALSE) {
  *   provider (from encrypt_get_key_provider() or the name of the provider. If
  *   NULL, it assumes the default key provider.
  * @param array $config
- *   The selected configuration.
+ *   The selected profile.
  *
  * @return string
  *   The key.
@@ -525,7 +525,7 @@ function _encrypt_clear_plugin_cache($type = NULL) {
  * @param mixed $key_provider
  *   String name of provider to use. Uses setting default if NULL.
  * @param mixed $config
- *   A configuration to use. Uses the default configuration if NULL.
+ *   A profile to use. Uses the default profile if NULL.
  *
  * @return string
  *   A serialized array containing the encrypted text and encryption method.
@@ -547,7 +547,7 @@ function encrypt($text = '', array $options = array(), $method = NULL, $key_prov
  * @param mixed $key_provider
  *   String name of provider to use. Uses setting default if NULL.
  * @param mixed $config
- *   A configuration to use. Uses the default configuration if NULL.
+ *   A profile to use. Uses the default profile if NULL.
  *
  * @return string
  *   Decrypted text.
@@ -569,27 +569,27 @@ function encrypt_plugin_manager_plugin_directory($module, $plugin) {
 }
 
 /**
- * Title callback for the configuration edit page.
+ * Title callback for the profile edit page.
  *
  * @param string $config
- *   The machine-readable name of the configuration being edited.
+ *   The machine-readable name of the profile being edited.
  *
  * @return string
- *   The human-friendly label of the requested configuration.
+ *   The human-friendly label of the requested profile.
  */
 function encrypt_config_edit_title($config) {
   return $config['label'];
 }
 
 /**
- * Menu argument loader: loads a configuration by name.
+ * Menu argument loader: loads a profile by name.
  *
  * @param string $name
- *   The machine-readable name of an encryption configuration to load,
+ *   The machine-readable name of an encryption profile to load,
  *   where '-' is replaced with '_'.
  *
  * @return array
- *   An array representing an encryption configuration or FALSE if $name
+ *   An array representing an encryption profile or FALSE if $name
  *   does not exist.
  */
 function encrypt_config_load($name) {

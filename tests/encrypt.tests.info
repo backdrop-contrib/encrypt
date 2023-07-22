@@ -18,6 +18,6 @@ file = encrypt.test
 
 [EncryptConfigTest]
 name = Configuration Management
-description = Test basic management of configuration including adding, editing, and deleting.
+description = Test basic management of profiles including adding, editing, and deleting.
 group = Encrypt
 file = encrypt.test

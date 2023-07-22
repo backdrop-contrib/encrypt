@@ -3,7 +3,7 @@ Encrypt
 
 This module is an API that other modules can use to encrypt data. It
 doesn't provide any user-facing features of its own, aside from
-administration pages to manage configuration.
+administration pages to manage encryption profiles.
 
 The encrypt module Provides an API for two-way encryption. Backdrop has no
 native way to do two-way encryption. PHP's ability to do two-way encryption is a
@@ -19,8 +19,8 @@ Install this module using the official Backdrop CMS instructions at
 Configuration
 -------------
 
-**Encrypt** allows multiple configurations to be managed within a Backdrop site.
-Each configuration contains an encryption method and a key provider, along with
+**Encrypt** allows multiple encryption profiles to be managed within a Backdrop site.
+Each profile contains an encryption method and a key provider, along with
 any additional settings that the method or provider requires.
 
 API

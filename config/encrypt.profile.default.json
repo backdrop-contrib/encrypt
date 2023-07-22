@@ -2,7 +2,7 @@
     "_config_name": "encrypt.profile.default",
     "name": "default",
     "label": "Default",
-    "description": "The default configuration.",
+    "description": "The default profile.",
     "method": "openssl",
     "method_settings": false,
     "provider": "backdrop_variable",

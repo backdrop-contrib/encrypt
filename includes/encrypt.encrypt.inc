@@ -23,7 +23,7 @@
  * @param mixed $key_provider
  *   The key provider used to fetch the encryption key. Uses default if NULL.
  * @param string $config
- *   A configuration to use. Uses the default configuration if NULL.
+ *   A profile to use. Uses the default profile if NULL.
  *
  * @return string
  *   Depends on the value of $op
@@ -61,8 +61,8 @@ function _encrypt_decrypt($op = 'encrypt', $text = '', array $options = array(),
     $provider_settings = isset($encryption_array['provider_settings']) ? $encryption_array['provider_settings'] : '';
   }
 
-  // If the configuration was specified, load it. Otherwise, load the
-  // default configuration.
+  // If the profile was specified, load it. Otherwise, load the
+  // default profile.
   if ($config) {
     $config = encrypt_get_config($config);
   }
@@ -71,25 +71,25 @@ function _encrypt_decrypt($op = 'encrypt', $text = '', array $options = array(),
   }
 
   // If the method was not specified, use the method
-  // from the configuration.
+  // from the profile.
   if (empty($method)) {
     $method = $config['method'];
   }
 
   // If the method settings were not specified, use the method settings
-  // from the configuration.
+  // from the profile.
   if (empty($method_settings)) {
     $method_settings = $config['method_settings'];
   }
 
   // If the provider was not specified, use the provider
-  // from the configuration.
+  // from the profile.
   if (empty($key_provider)) {
     $key_provider = $config['provider'];
   }
 
   // If the provider settings were not specified, use the provider settings
-  // from the configuration.
+  // from the profile.
   if (empty($provider_settings)) {
     $provider_settings = $config['provider_settings'];
   }
@@ -103,7 +103,7 @@ function _encrypt_decrypt($op = 'encrypt', $text = '', array $options = array(),
 
   // Call callback function for encryption and decryption.
   $encryption_method = encrypt_get_encryption_method($method);
-  $function = plugin_manager_plugin_get_function($encryption_method, 'encrypt callback');
+  $function = plugin_manager_get_function($encryption_method, 'encrypt callback');
   $processed = call_user_func($function, $op, $text, $key, $options, $config);
 
   // Check for returned value.

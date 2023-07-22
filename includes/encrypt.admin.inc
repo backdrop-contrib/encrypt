@@ -8,7 +8,7 @@
  */
 
 /**
- * Menu callback; displays the list of configurations.
+ * Menu callback; displays the list of profiles.
  */
 function encrypt_configs_list() {
   $configs = encrypt_get_configs();
@@ -78,18 +78,18 @@ function encrypt_configs_list() {
     '#theme' => 'table',
     '#header' => $header,
     '#rows' => $rows,
-    '#empty' => t('No encryption configurations are available. <a href="@link">Add a configuration</a>.', array('@link' => url(ENCRYPT_MENU_PATH . '/add'))),
+    '#empty' => t('No encryption profiles are available. <a href="@link">Add a profile</a>.', array('@link' => url(ENCRYPT_MENU_PATH . '/add'))),
   );
 
   return $build;
 }
 
 /**
- * Form constructor for the configuration edit form.
+ * Form constructor for the profile edit form.
  *
  * @param array $config
- *   (optional) An array representing the configuration, when editing an
- *   existing configuration.
+ *   (optional) An array representing the profile, when editing an
+ *   existing profile.
  *
  * @see encrypt_config_form_validate()
  * @see encrypt_config_form_submit()
@@ -115,7 +115,7 @@ function encrypt_config_form($form, &$form_state, array $config = NULL) {
 
   // Create a list of method titles to be used for radio buttons.
   // Only display a deprecated method if it's the currently selected
-  // method for this configuration. List it at the bottom.
+  // method for this profile. List it at the bottom.
   $method_options = array();
   foreach ($methods as $id => $method) {
     if (!$method['deprecated']) {
@@ -130,7 +130,7 @@ function encrypt_config_form($form, &$form_state, array $config = NULL) {
 
   // Create a list of provider titles to be used for radio buttons.
   // Only display a deprecated provider if it's the currently selected
-  // provider for this configuration. List it at the bottom.
+  // provider for this profile. List it at the bottom.
   $provider_options = array();
   foreach ($providers as $id => $provider) {
     if (!$provider['deprecated']) {
@@ -155,7 +155,7 @@ function encrypt_config_form($form, &$form_state, array $config = NULL) {
     '#title' => t('Name'),
     '#type' => 'textfield',
     '#default_value' => isset($config['label']) ? $config['label'] : NULL,
-    '#description' => t('The human-readable name of the configuration.'),
+    '#description' => t('The human-readable name of the profile.'),
     '#required' => TRUE,
     '#size' => 30,
   );
@@ -168,13 +168,13 @@ function encrypt_config_form($form, &$form_state, array $config = NULL) {
       'exists' => 'encrypt_config_load',
       'source' => array('label'),
     ),
-    '#description' => t('A unique machine-readable name for the configuration. It must only contain lowercase letters, numbers, and underscores.'),
+    '#description' => t('A unique machine-readable name for the profile. It must only contain lowercase letters, numbers, and underscores.'),
   );
   $form['description'] = array(
     '#title' => t('Description'),
     '#type' => 'textarea',
     '#default_value' => isset($config['description']) ? $config['description'] : NULL,
-    '#description' => t('A short description of the configuration.'),
+    '#description' => t('A short description of the profile.'),
   );
 
   $form['settings'] = array(
@@ -194,10 +194,10 @@ function encrypt_config_form($form, &$form_state, array $config = NULL) {
     '#type' => 'checkbox',
     '#title' => t('Enabled'),
     '#default_value' => isset($config['enabled']) ? $config['enabled'] : NULL,
-    '#description' => t('If checked, this configuration will be available for encryption. The default configuration must be enabled.'),
+    '#description' => t('If checked, this profile will be available for encryption. The default profile must be enabled.'),
   );
 
-  // If this is the default configuration, disable the enabled checkbox.
+  // If this is the default profile, disable the enabled checkbox.
   if (isset($config['name']) && $config['name'] == $default_config) {
     $form['general_settings']['enabled']['#disabled'] = TRUE;
   }
@@ -305,14 +305,14 @@ function encrypt_config_form($form, &$form_state, array $config = NULL) {
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['submit'] = array(
     '#type' => 'submit',
-    '#value' => t('Save configuration'),
+    '#value' => t('Save profile'),
     '#submit' => array('encrypt_config_form_submit'),
     '#weight' => 40,
   );
   if (isset($config['name'])) {
     $form['actions']['delete'] = array(
       '#type' => 'submit',
-      '#value' => t('Delete configuration'),
+      '#value' => t('Delete profile'),
       '#submit' => array('encrypt_config_form_delete_submit'),
       '#limit_validation_errors' => array(),
       '#weight' => 45,
@@ -326,11 +326,11 @@ function encrypt_config_form($form, &$form_state, array $config = NULL) {
  * Form validation handler for encrypt_config_form().
  */
 function encrypt_config_form_validate($form, &$form_state) {
-  // Don't allow the default configuration to be disabled.
+  // Don't allow the default profile to be disabled.
   $default_config = config_get('encrypt.settings', 'default_config');
 
   if ($default_config == $form_state['values']['name'] && !$form_state['values']['enabled']) {
-    form_set_error('general_settings][enabled', t('The default configuration must be enabled.'));
+    form_set_error('general_settings][enabled', t('The default profile must be enabled.'));
   }
 }
 
@@ -381,14 +381,14 @@ function encrypt_config_form_submit($form, &$form_state) {
 /**
  * Form submission handler for encrypt_config_form().
  *
- * Handles the 'Delete' button on the encryption configuration form.
+ * Handles the 'Delete' button on the encryption profile form.
  */
 function encrypt_config_form_delete_submit($form, &$form_state) {
   $form_state['redirect'] = ENCRYPT_MENU_PATH . '/delete/' . str_replace('_', '-', $form['name']['#default_value']);
 }
 
 /**
- * Menu callback to delete an encryption configuration.
+ * Menu callback to delete an encryption profile.
  *
  * @ingroup forms
  */
@@ -396,14 +396,14 @@ function encrypt_config_delete_confirm($form, &$form_state, $config) {
   $default_config = config_get('encrypt.settings', 'default_config');
 
   if ($default_config == $config['name']) {
-    backdrop_set_message(t('The default configuration cannot be deleted.'), 'error');
+    backdrop_set_message(t('The default profile cannot be deleted.'), 'error');
     backdrop_goto(ENCRYPT_MENU_PATH);
   }
 
   $form['name'] = array('#type' => 'value', '#value' => $config['name']);
   $form['label'] = array('#type' => 'value', '#value' => $config['label']);
 
-  $message = t('Are you sure you want to delete the configuration %label?', array('%label' => $config['label']));
+  $message = t('Are you sure you want to delete the profile %label?', array('%label' => $config['label']));
   $caption = '<p>' . t('This action cannot be undone.') . '</p>';
 
   return confirm_form($form, filter_xss_admin($message), ENCRYPT_MENU_PATH, filter_xss_admin($caption), t('Delete'));
@@ -419,14 +419,14 @@ function encrypt_config_delete_confirm_submit($form, &$form_state) {
   $config->delete();
 
   $t_args = array('%label' => $form_state['values']['label']);
-  backdrop_set_message(t('The configuration %label has been deleted.', $t_args));
-  watchdog('encrypt', 'Deleted encryption configuration %label.', $t_args, WATCHDOG_NOTICE);
+  backdrop_set_message(t('The profile %label has been deleted.', $t_args));
+  watchdog('encrypt', 'Deleted encryption profile %label.', $t_args, WATCHDOG_NOTICE);
 
   $form_state['redirect'] = ENCRYPT_MENU_PATH;
 }
 
 /**
- * Menu callback to make a configuration the default.
+ * Menu callback to make a profile the default.
  */
 function encrypt_config_make_default($config) {
   $config_settings = config('encrypt.settings');
@@ -436,19 +436,19 @@ function encrypt_config_make_default($config) {
   $default_config = $config_settings->get('default_config');
   $t_args = array('%label' => $config['label']);
   if ($default_config == $config['name']) {
-    // If the configuration is not enabled and it's the new default, enable it.
+    // If the profile is not enabled and it's the new default, enable it.
     if (!$config['enabled']) {
       config_set('encrypt.profile.' . $config['name'], 'enabled', 1);
-      backdrop_set_message(t('The configuration %label has been enabled.', $t_args));
-      watchdog('node', 'Enabled encryption configuration %label.', $t_args, WATCHDOG_NOTICE);
+      backdrop_set_message(t('The profile %label has been enabled.', $t_args));
+      watchdog('node', 'Enabled encryption profile %label.', $t_args, WATCHDOG_NOTICE);
     }
 
-    backdrop_set_message(t('The configuration %label has been made the default.', $t_args));
-    watchdog('encrypt', 'Made encryption configuration %label the default.', $t_args, WATCHDOG_NOTICE);
+    backdrop_set_message(t('The profile %label has been made the default.', $t_args));
+    watchdog('encrypt', 'Made encryption profile %label the default.', $t_args, WATCHDOG_NOTICE);
   }
   else {
-    backdrop_set_message(t('The configuration %label could not be made the default.', $t_args), 'error');
-    watchdog('encrypt', 'Error when trying to make encryption configuration %label the default.', $t_args, WATCHDOG_ERROR);
+    backdrop_set_message(t('The profile %label could not be made the default.', $t_args), 'error');
+    watchdog('encrypt', 'Error when trying to make encryption profile %label the default.', $t_args, WATCHDOG_ERROR);
   }
 
   backdrop_goto(ENCRYPT_MENU_PATH);
@@ -499,13 +499,13 @@ function encrypt_admin_settings($form, &$form_state) {
 }
 
 /**
- * Returns HTML for a configuration description.
+ * Returns HTML for a profile description.
  *
  * @param array $variables
  *   An associative array containing:
- *   - label: The human-readable label of the configuration.
- *   - name: The machine name of the configuration.
- *   - description: A brief description of the configuration.
+ *   - label: The human-readable label of the profile.
+ *   - name: The machine name of the profile.
+ *   - description: A brief description of the profile.
  *
  * @ingroup themeable
  */

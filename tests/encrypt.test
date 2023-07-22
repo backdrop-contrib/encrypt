@@ -155,7 +155,7 @@ class EncryptEncryptionMethodPluginsTest extends BackdropWebTestCase {
   }
 
   /**
-   * The declared encryption method appears on the add configuration page.
+   * The declared encryption method appears on the add profile page.
    */
   public function testPluginsAppearInList() {
     $this->backdropGet('admin/config/system/encrypt/add');
@@ -189,7 +189,7 @@ class EncryptEncryptionMethodPluginsTest extends BackdropWebTestCase {
 }
 
 /**
- * Test configurations.
+ * Test profiles.
  */
 class EncryptConfigTest extends BackdropWebTestCase {
 
@@ -206,26 +206,26 @@ class EncryptConfigTest extends BackdropWebTestCase {
   }
 
   /**
-   * Test that the configuration table was created on install.
+   * Test that the profile was created on install.
    *
-   * The table should exist and a default configuration should have been
+   * A default profile should have been
    * added.
    */
   public function testConfigInstall() {
-    // Test that the default configuration was added and is enabled.
+    // Test that the default profile was added and is enabled.
     $default_config = encrypt_get_default_config();
-    $this->assertTrue($default_config['name'] == 'default', 'A default configuration was added.');
-    $this->assertTrue($default_config['enabled'], 'The default configuration is enabled.');
+    $this->assertTrue($default_config['name'] == 'default', 'A default profile was added.');
+    $this->assertTrue($default_config['enabled'], 'The default profile is enabled.');
   }
 
   /**
-   * Test configuration management.
+   * Test profile management.
    *
-   * Ensure that a configuration can be added, loaded, edited, made the
+   * Ensure that a profile can be added, loaded, edited, made the
    * default, and deleted.
    */
   public function testConfigManage() {
-    // Create the test configuration.
+    // Create the test profile.
     $fields = array();
     $fields['label'] = t('Test');
     $fields['name'] = strtolower($fields['label']);
@@ -233,41 +233,41 @@ class EncryptConfigTest extends BackdropWebTestCase {
     $fields['enabled'] = FALSE;
     $fields['encrypt_encryption_method'] = 'mcrypt_aes_cbc';
     $fields['encrypt_key_provider'] = 'backdrop_variable';
-    $this->backdropPost('admin/config/system/encrypt/add', $fields, t('Save configuration'));
-    $this->assertText(t('The configuration @label has been added.', array('@label' => $fields['label'])));
+    $this->backdropPost('admin/config/system/encrypt/add', $fields, t('Save profile'));
+    $this->assertText(t('The profile @label has been added.', array('@label' => $fields['label'])));
 
-    // Load the test configuration.
+    // Load the test profile.
     $config = encrypt_get_config($fields['name'], TRUE);
-    $this->assertTrue($config['label'] == $fields['label'], format_string('The configuration @label was loaded.', array('@label' => $fields['label'])));
+    $this->assertTrue($config['label'] == $fields['label'], format_string('The profile @label was loaded.', array('@label' => $fields['label'])));
 
-    // Edit the test configuration.
+    // Edit the test profile.
     $edit_fields = $fields;
     unset($edit_fields['name']);
     $edit_fields['description'] = t('This is the edited description.');
-    $this->backdropPost('admin/config/system/encrypt/edit/' . $fields['name'], $edit_fields, t('Save configuration'));
-    $this->assertText(t('The configuration @label has been updated.', array('@label' => $fields['label'])));
+    $this->backdropPost('admin/config/system/encrypt/edit/' . $fields['name'], $edit_fields, t('Save profile'));
+    $this->assertText(t('The profile @label has been updated.', array('@label' => $fields['label'])));
 
-    // Make the test configuration the default.
+    // Make the test profile the default.
     $this->backdropGet('admin/config/system/encrypt/default/' . $fields['name']);
-    $this->assertText(t('The configuration @label has been made the default.', array('@label' => $fields['label'])));
+    $this->assertText(t('The profile @label has been made the default.', array('@label' => $fields['label'])));
     $default_config = encrypt_get_default_config(TRUE);
-    $this->assertTrue($default_config['name'] == $fields['name'], 'The test configuration is the default.');
+    $this->assertTrue($default_config['name'] == $fields['name'], 'The test profile is the default.');
     $test_config = encrypt_get_config($fields['name'], TRUE);
-    $this->assertTrue($test_config['enabled'], 'The test configuration is enabled.');
+    $this->assertTrue($test_config['enabled'], 'The test profile is enabled.');
 
-    // Ensure that the default configuration cannot be deleted.
+    // Ensure that the default profile cannot be deleted.
     $this->backdropGet('admin/config/system/encrypt/delete/' . $default_config['name']);
-    $this->assertText(t('The default configuration cannot be deleted.'));
+    $this->assertText(t('The default profile cannot be deleted.'));
 
-    // Make the test configuration not the default, then delete it.
+    // Make the test profile not the default, then delete it.
     $this->backdropGet('admin/config/system/encrypt/default/default');
     $this->backdropGet('admin/config/system/encrypt/delete/' . $fields['name']);
     $this->backdropPost(NULL, array(), t('Delete'));
-    $this->assertText(t('The configuration @label has been deleted.', array('@label' => $fields['label'])));
+    $this->assertText(t('The profile @label has been deleted.', array('@label' => $fields['label'])));
   }
 
   /**
-   * Test an encryption with just a configuration.
+   * Test an encryption with just a profile.
    */
   public function testConfigEncrypt() {
     $config = encrypt_get_default_config(TRUE);
