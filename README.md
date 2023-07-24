@@ -44,12 +44,12 @@ Encryption methods
 To provide an encryption method to the Encrypt API module, you need to do a
 couple things:
 
-Implement `hook_plugin_manager_plugin_directory` in your module. This simply tells
+Implement `hook_plugin_manager_directory` in your module. This simply tells
 plugin_manager where to look for your module's plugins. Here is an example from
 Encrypt's own plugins.
 
 ```php
-function encrypt_plugin_manager_plugin_directory($module, $plugin) {
+function encrypt_plugin_manager_directory($module, $plugin) {
   if ($module == 'encrypt') {
     return 'plugins/' . $plugin;
   }
@@ -221,10 +221,12 @@ complete text.
 Maintainers
 -----------
 
-* Herb v/d Dool <https://github.com/herbdool>
+* [Herb v/d Dool](https://github.com/herbdool)
 
 Credits
 -------
+
+Ported to Backdrop by [Herb v/d Dool](https://github.com/herbdool).
 
 Drupal version currently maintained by:
 

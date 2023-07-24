@@ -31,7 +31,7 @@ function encrypt_test_encryption_methods_test($op = 'encrypt', $text = '', $opti
 function _encrypt_test_method_dependencies() {
   $errors = array();
 
-  if (variable_get('encrypt_test_trigger_unmet_deps', TRUE)) {
+  if (state_get('encrypt_test_trigger_unmet_deps', TRUE)) {
     $errors[] = t('This is an unmet dependency.');
   }
 

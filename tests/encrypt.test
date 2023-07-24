@@ -66,6 +66,32 @@ class EncryptEncryptDecryptTest extends BackdropWebTestCase {
     }
   }
 
+  /**
+   * Test encryption and decryption with the "AES-128-CBC" method.
+   *
+   * Pretty much the same as the "None" tests. See that method for more
+   * detailed comments.
+   */
+  public function testOpenSslEncryptDecrypt() {
+    if (function_exists('openssl_cipher_iv_length')) {
+      $random = $this->randomName(10);
+      $encrypted = encrypt($random, array(), 'openssl');
+
+      // Test that the original value does not equal the encrypted
+      // value (i.e. that the data is actually being encrypted).
+      $this->assertTrue(strpos($encrypted, 'a:') === 0, t('AES-128-CBC: The encrypted value is a serialized array.'));
+      $encryptedArray = unserialize($encrypted);
+      $this->assertNotEqual($random, $encryptedArray['text'], t('AES-128-CBC: A value, encrypted, does not equal itself.'));
+      $this->assertEqual($encryptedArray['method'], 'openssl', t('AES-128-CBC: Encryption method stored correctly.'));
+
+      $decrypted = decrypt($encrypted);
+      $this->assertEqual($random, $decrypted, t('AES-128-CBC: A value, decrypted, equals itself.'));
+    }
+    else {
+      debug('OpenSSL extension not present. Skipping tests.');
+    }
+  }
+
 }
 
 /**
@@ -88,10 +114,10 @@ class EncryptPortability extends BackdropWebTestCase {
   public function testMethodAndKeyProviderPortability() {
     // Generate some text to encrypt and encrypt it.
     $text = $this->randomName(10);
-    $encrypted = encrypt($text, array(), 'mcrypt_aes_cbc', 'backdrop_variable');
+    $encrypted = encrypt($text, array(), 'openssl', 'backdrop_variable');
     $encrypted_array = unserialize($encrypted);
 
-    $this->assertEqual($encrypted_array['method'], 'mcrypt_aes_cbc', t('Encryption method is stored with an encrypted value.'));
+    $this->assertEqual($encrypted_array['method'], 'openssl', t('Encryption method is stored with an encrypted value.'));
     $this->assertEqual($encrypted_array['key_provider'], 'backdrop_variable', t('Key provider is stored with an encrypted value.'));
   }
 
@@ -103,7 +129,7 @@ class EncryptPortability extends BackdropWebTestCase {
   public function testDecryptingRandomValue() {
     // Generate some text and encrypt it.
     $text = $this->randomName(10);
-    $encrypted = encrypt($text, array(), 'mcrypt_aes_cbc', 'backdrop_variable');
+    $encrypted = encrypt($text, array(), 'openssl', 'backdrop_variable');
     $encrypted_array = unserialize($encrypted);
 
     // First, just check to see that the value was actually encrypted.
@@ -231,7 +257,7 @@ class EncryptConfigTest extends BackdropWebTestCase {
     $fields['name'] = strtolower($fields['label']);
     $fields['description'] = t('This is the original description.');
     $fields['enabled'] = FALSE;
-    $fields['encrypt_encryption_method'] = 'mcrypt_aes_cbc';
+    $fields['encrypt_encryption_method'] = 'openssl';
     $fields['encrypt_key_provider'] = 'backdrop_variable';
     $this->backdropPost('admin/config/system/encrypt/add', $fields, t('Save profile'));
     $this->assertText(t('The profile @label has been added.', array('@label' => $fields['label'])));
@@ -280,7 +306,7 @@ class EncryptConfigTest extends BackdropWebTestCase {
     $this->assertTrue(strpos($encrypted, 'a:') === 0, 'Config: The encrypted value is a serialized array.');
     $encryptedArray = unserialize($encrypted);
     $this->assertNotEqual($random, $encryptedArray['text'], 'Config: A value, encrypted, does not equal itself.');
-    $this->assertEqual($encryptedArray['method'], 'mcrypt_aes_cbc', 'Config: Encryption method stored correctly.');
+    $this->assertEqual($encryptedArray['method'], 'openssl', 'Config: Encryption method stored correctly.');
 
     $decrypted = decrypt($encrypted, array(), 'default');
     $this->assertEqual($random, $decrypted, 'Config: A value, decrypted, equals itself.');

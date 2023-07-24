@@ -317,6 +317,7 @@ function encrypt_get_default_config($reset = FALSE) {
  */
 function encrypt_save_config(array $fields, $messages = TRUE) {
   $config = config('encrypt.profile.' . $fields['name']);
+  $is_new = $config->isNew();
   foreach ($fields as $key => $field) {
     $config->set($key, $field);
   }
@@ -326,7 +327,7 @@ function encrypt_save_config(array $fields, $messages = TRUE) {
   if ($messages) {
     $t_args = array('%label' => $fields['label']);
 
-    switch ($config->isNew()) {
+    switch ($is_new) {
       case TRUE:
         backdrop_set_message(t('The profile %label has been added.', $t_args));
         watchdog('encrypt', 'Added encryption profile %label.', $t_args, WATCHDOG_NOTICE, l(t('view'), ENCRYPT_MENU_PATH . '/list'));
@@ -558,11 +559,11 @@ function decrypt($text = '', array $options = array(), $method = NULL, $key_prov
 }
 
 /**
- * Implements hook_plugin_manager_plugin_directory().
+ * Implements hook_plugin_manager_directory().
  *
  * Tell plugin_manager about our plugins.
  */
-function encrypt_plugin_manager_plugin_directory($module, $plugin) {
+function encrypt_plugin_manager_directory($module, $plugin) {
   if ($module == 'encrypt') {
     return 'plugins/' . $plugin;
   }
