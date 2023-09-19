@@ -21,7 +21,7 @@ function encrypt_configs_list() {
     t('Encryption Method'),
     t('Key Provider'),
     t('Status'),
-    array('data' => t('Operations'), 'colspan' => '3'),
+    t('Operations'),
   );
   $rows = array();
 
@@ -57,19 +57,27 @@ function encrypt_configs_list() {
     }
     $row[] = array('data' => implode(', ', $status));
 
-    // Set the edit column.
-    $row[] = array('data' => l(t('edit'), ENCRYPT_MENU_PATH . '/edit/' . $config_url_str));
-
-    // Set the delete column.
-    $row[] = array('data' => l(t('delete'), ENCRYPT_MENU_PATH . '/delete/' . $config_url_str));
-
+    $links = array();
+    $links['configure'] = array(
+      'title' => t('Configure'),
+      'href' => ENCRYPT_MENU_PATH . '/edit/' . $config_url_str,
+    );
+    $links['delete'] = array(
+      'title' => t('Delete'),
+      'href' => ENCRYPT_MENU_PATH . '/delete/' . $config_url_str,
+    );
     // Set the make default column if this is not already the default.
     if ($default_config != $name) {
-      $row[] = array('data' => l(t('make default'), ENCRYPT_MENU_PATH . '/default/' . $config_url_str));
+      $links['make_default'] = array(
+        'title' => t('Make default'),
+        'href' => ENCRYPT_MENU_PATH . '/default/' . $config_url_str,
+      );
     }
-    else {
-      $row[] = array('data' => '');
-    }
+    $operations = array(
+      '#type' => 'operations',
+      '#links' => $links,
+    );
+    $row[] = array('data' => $operations);
 
     $rows[] = $row;
   }
