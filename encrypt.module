@@ -163,22 +163,17 @@ function encrypt_plugin_manager_plugin_type() {
 /**
  * Get all profiles.
  *
- * @param bool $reset
- *   A flag to force the profiles to be retrieved from the database.
- *
  * @return array
  *   An array of profiles.
  */
-function encrypt_get_configs($reset = FALSE) {
-  static $configs = array();
+function encrypt_get_configs() {
+  $configs = array();
 
-  if (!$configs || $reset) {
-    $profile_names = config_get_names_with_prefix('encrypt.profile');
+  $profile_names = config_get_names_with_prefix('encrypt.profile.');
 
-    foreach ($profile_names as $profile) {
-      $profile_config = config_get($profile);
-      $configs[$profile_config['name']] = $profile_config;
-    }
+  foreach ($profile_names as $profile) {
+    $profile_config = config_get($profile);
+    $configs[$profile_config['name']] = $profile_config;
   }
 
   return $configs;
@@ -201,7 +196,7 @@ function encrypt_get_configs_as_options($reset = FALSE) {
   static $options = array();
 
   if (!$options || $reset) {
-    $configs = encrypt_get_configs($reset);
+    $configs = encrypt_get_configs();
 
     foreach ($configs as $key => $config) {
       $options[$key] = $config['label'];
@@ -216,23 +211,12 @@ function encrypt_get_configs_as_options($reset = FALSE) {
  *
  * @param bool $name
  *   The machine name of the profile to retrieve.
- * @param bool $reset
- *   A flag to force the profile to be retrieved from the database.
  *
  * @return array
  *   An array with details for the requested profile.
  */
-function encrypt_get_config($name = NULL, $reset = FALSE) {
-  $configs = encrypt_get_configs($reset);
-
-  if (array_key_exists($name, $configs)) {
-    $config = $configs[$name];
-  }
-  else {
-    $config = NULL;
-  }
-
-  return $config;
+function encrypt_get_config($name = NULL) {
+  return config_get('encrypt.profile.' . $name);
 }
 
 /**
@@ -248,7 +232,7 @@ function encrypt_get_enabled_configs($reset = FALSE) {
   static $enabled_configs = array();
 
   if (!$enabled_configs || $reset) {
-    $configs = encrypt_get_configs($reset);
+    $configs = encrypt_get_configs();
 
     foreach ($configs as $key => $config) {
       if ($config['enabled']) {
@@ -301,7 +285,7 @@ function encrypt_get_default_config($reset = FALSE) {
 
   if (!$default_config || $reset) {
     $default_config_name = config_get('encrypt.settings', 'default_config');
-    $default_config = encrypt_get_config($default_config_name, $reset);
+    $default_config = encrypt_get_config($default_config_name);
   }
 
   return $default_config;
