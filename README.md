@@ -1,5 +1,4 @@
-Encrypt
-=======
+# Encrypt
 
 This module is an API that other modules can use to encrypt data. It
 doesn't provide any user-facing features of its own, aside from
@@ -10,21 +9,66 @@ native way to do two-way encryption. PHP's ability to do two-way encryption is a
 little more involved than most people care to get into.  This module provides an
 easy way to encrypt() and decrypt().
 
-Installation
-------------
+## Installation
 
 Install this module using the official Backdrop CMS instructions at
 <https://backdropcms.org/guide/modules>.
 
-Configuration
--------------
+## Configuration
 
 **Encrypt** allows multiple encryption profiles to be managed within a Backdrop site.
 Each profile contains an encryption method and a key provider, along with
 any additional settings that the method or provider requires.
 
-API
----
+## Key Providers
+
+The module is bundled with two key providers:
+
+* **Variable**: Uses a configuration variable, preferably defined in the site's
+settings.php file.
+* **File**: Uses a file, preferably located outside of the web root directory.
+
+There is also the **Key module** which can be used to store and provide the key,
+including option integration with third-party secure key storage.
+
+The module comes with a variable key provider named
+`encrypt_backdrop_variable_key`. To use this, add a configuration variable to
+the site's settings.php. Example, for a 16 byte, Base64-encoded key:
+
+`$settings['encrypt_backdrop_variable_key'] = 'MTIzNDU2Nzg5MDEyMzQ1Ng==';`
+
+The key requirements, regardless of whether it is stored in *File* or *Variable*,
+depend on the encryption method. For example, if using OpenSSL, the key should
+be 16, 24 or 32 bytes/characters long. Base64-encoding is optional, but the key
+should match the configuration if Base64-decode was selected.
+
+You can generate a key from a Unix command line using:
+
+`dd if=/dev/urandom bs=16 count=1 | base64 -i`
+
+Alternatively, you could also create your own string and search
+online for a site that can Base64 encode it.
+
+## Storing the Encrypted Data
+
+It is up to the module calling encrypt() to manage and store the encrypted data.
+The chosen method of encryption and key provider are returned with the encrypted
+results, meaning that, even if method or key settings are changed for the site,
+previously encrypted data can still be decrypted.
+
+## Encryption Methods
+
+The module includes support for two encryption methods, with another, `mcrypt`,
+no longer available for current versions of PHP.
+
+**OpenSSL**, a PHP cryptographic extension, requires a key that is 16, 24, or
+32 bytes.
+
+**PHP Secure Communications Library**, uses the
+[phpseclib](https://github.com/phpseclib/phpseclib) library, currently only the
+1.x branch. This method is only preferable if you cannot use OpenSSL.
+
+## API
 
 The Encrypt API module provides a low-level system for two-way encryption. While
 it provides developers and users with a few basic encryption methods and key
@@ -38,8 +82,7 @@ module are also implemented as plugins, so for good examples of how to implement
 your own, looking at the code would be a good place to start. You can find them
 in the Encrypt module's directory, in the *plugins* folder.
 
-Encryption methods
-------------------
+### Encryption methods
 
 To provide an encryption method to the Encrypt API module, you need to do a
 couple things:
@@ -156,8 +199,7 @@ function your_encryption_callback($op = 'encrypt', $text = '', $key, $options = 
 All encryption method plugins are cached by plugin_manager, so you may have to
 clear Backdrop's cache for new plugins or changes to existing plugins to appear.
 
-Key providers
--------------
+### Key providers
 
 Implementing key providers is, programmatically, very similar to defining
 encryption methods.
@@ -212,19 +254,16 @@ to FALSE if the key provider returns a different key based on a value that is
 specific to a particular item, such as a node ID or a field's machine name.
 Defaults to TRUE.
 
-License
--------
+## License
 
 This project is GPL v2 software. See the LICENSE.txt file in this directory for
 complete text.
 
-Maintainers
------------
+## Maintainers
 
 * [Herb v/d Dool](https://github.com/herbdool)
 
-Credits
--------
+## Credits
 
 Ported to Backdrop by [Herb v/d Dool](https://github.com/herbdool).
 

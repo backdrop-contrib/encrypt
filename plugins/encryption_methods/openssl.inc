@@ -13,7 +13,7 @@ $plugin = encrypt_openssl_encrypt_encryption_methods();
 function encrypt_openssl_encrypt_encryption_methods() {
   return array(
     'title' => t('AES (OpenSSL) + HMAC-SHA256'),
-    'description' => t('Uses AES-128-CBC via OpenSSL along with HMAC-SHA256.'),
+    'description' => t('Uses AES-128-CBC via OpenSSL along with HMAC-SHA256. The key MUST be 16, 24, or 32 bytes.'),
     'encrypt callback' => '_encrypt_encryption_methods_openssl',
     'dependency callback' => '_encrypt_openssl_extension_is_present',
   );
