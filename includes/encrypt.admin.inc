@@ -95,7 +95,7 @@ function encrypt_configs_list() {
 /**
  * Form constructor for the profile edit form.
  *
- * @param array $config
+ * @param array|null $config
  *   (optional) An array representing the profile, when editing an
  *   existing profile.
  *
@@ -103,7 +103,7 @@ function encrypt_configs_list() {
  * @see encrypt_config_form_submit()
  * @ingroup forms
  */
-function encrypt_config_form($form, &$form_state, array $config = NULL) {
+function encrypt_config_form($form, &$form_state, ?array $config = NULL) {
   $default_config = config_get('encrypt.settings', 'default_config');
 
   // Clear the plugin cache on the first page load (but not on AJAX refreshes).
