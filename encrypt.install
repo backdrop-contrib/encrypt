@@ -134,3 +134,22 @@ function encrypt_update_1001() {
     db_drop_table('encrypt_config');
   }
 }
+
+/**
+ * Update key_encrypt installation to new location in Encrypt module.
+ */
+function encrypt_update_1002() {
+  $module = db_query("SELECT name FROM {system} WHERE filename LIKE '%key/modules/key_encrypt%' AND type = 'module'")->fetchField();
+  if ($module) {
+    $path = backdrop_get_path('module', 'key_encrypt');
+    backdrop_set_message(t('The contributed module %module has been located at %path. The module is now included in Encrypt module so the installation will be updated.', array(
+      '%module' => 'Key Encrypt',
+      '%path' => BACKDROP_ROOT . '/' . $path,
+    )), 'warning');
+    // Update the entry for the Key Encrypt module from the system table.
+    $updated_path = str_replace('key/', 'encrypt/', $path);
+    db_query("UPDATE {system} SET filename = :filename WHERE name = 'key_encrypt' AND type = 'module'", array(':filename' => $updated_path));
+  } else {
+    return t('<em>Key module</em> version of <em>Key Encrypt</em> not found. Nothing to be done.');
+  }
+}
