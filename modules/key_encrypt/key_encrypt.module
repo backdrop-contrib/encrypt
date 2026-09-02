@@ -1,0 +1,17 @@
+<?php
+
+/**
+ * @file
+ * Allows Key to manage keys in Encrypt.
+ */
+
+/**
+ * Implements hook_plugin_manager_directory().
+ *
+ * Shows encrypt module where the encrypt plugin directory is.
+ */
+function key_encrypt_plugin_manager_directory($module, $plugin) {
+  if (in_array($module, array('encrypt', 'key')) && !empty($plugin)) {
+    return "plugins/$plugin";
+  }
+}

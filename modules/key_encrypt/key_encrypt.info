@@ -1,0 +1,8 @@
+name = Key Encrypt
+description = Provides integration with Encrypt to allow keys managed within Key to be used for encryption.
+package = Security
+backdrop = 1.x
+type = module
+
+dependencies[] = key
+dependencies[] = encrypt
