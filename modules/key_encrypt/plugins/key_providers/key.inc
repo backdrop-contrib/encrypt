@@ -39,11 +39,10 @@ function key_encrypt_key_settings_form($defaults) {
   $form = array();
 
   $form['key_config'] = array(
-    '#type' => 'select',
+    '#type' => 'key_select',
     '#title' => t('Key'),
-    '#description' => t('Keys listed here are defined in the <a href="@path">Key module</a>.', array('@path' => url('admin/config/system/keys'))),
     '#empty_option' => t('- Select a key -'),
-    '#options' => key_get_key_names_as_options(),
+    '#key_filters' => ['type' => 'encryption'],
     '#default_value' => isset($defaults['key_config']) ? $defaults['key_config'] : '',
     '#required' => TRUE,
   );
